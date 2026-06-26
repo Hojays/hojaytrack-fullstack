@@ -55,10 +55,14 @@ async function proxy(req: NextRequest, pathSegments: string[]) {
     statusText: flaskRes.statusText,
   })
 
-  // Forward ALL response headers from Flask back to the browser,
-  // especially Set-Cookie so the session is stored correctly.
+  const skipHeaders = [
+    "transfer-encoding",
+    "connection",
+    "content-encoding",
+    "content-length",
+  ]
   flaskRes.headers.forEach((value, key) => {
-    if (!["transfer-encoding", "connection"].includes(key.toLowerCase())) {
+    if (!skipHeaders.includes(key.toLowerCase())) {
       res.headers.append(key, value)
     }
   })
